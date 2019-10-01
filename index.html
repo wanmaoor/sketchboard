@@ -12,28 +12,50 @@
         box-sizing: border-box;
       }
       #canvas {
-        height: 100vh;
-        border: 1px solid red;
+        display: block;
       }
     </style>
   </head>
   <body>
-    <div id="canvas"></div>
+    <!-- <div id="canvas"></div> -->
+    <canvas id="canvas"></canvas>
     <script>
-      canvas.onclick = e => {
-        console.log(e.clientX);
-        console.log(e.clientY);
-        let div = document.createElement("div");
-        div.style.position = "absolute";
-        div.style.left = `${e.clientX}px`;
-        div.style.top = `${e.clientY}px`;
-        div.style.width='6px'
-        div.style.height='6px'
-        div.style.marginLeft='-3px'
-        div.style.marginTop='-3px'
-        div.style.borderRadius='50%'
-        div.style.background='black'
-        canvas.appendChild(div)
+      // canvas.onmousemove = e => {
+      //   let div = document.createElement("div");
+      //   div.style.position = "absolute";
+      //   div.style.left = `${e.clientX}px`;
+      //   div.style.top = `${e.clientY}px`;
+      //   div.style.width='6px'
+      //   div.style.height='6px'
+      //   div.style.marginLeft='-3px'
+      //   div.style.marginTop='-3px'
+      //   div.style.borderRadius='50%'
+      //   div.style.background='black'
+      //   canvas.appendChild(div)
+      // };
+      // ! DOM操作及其耗费性能.因为JS引擎线程要一直和渲染引擎线程保持通信, 而这通信的消耗是巨大的. 你可以感觉到明显的卡顿和延迟.
+
+      // 使用canvas
+      // 画线
+      let canvas = document.getElementById("canvas");
+      canvas.width = document.documentElement.clientWidth; //文档的宽度
+      canvas.height = document.documentElement.clientHeight;
+      let ctx = canvas.getContext("2d");
+      let isPainting = false;
+      canvas.onmousedown = () => {
+        isPainting = true;
+      };
+      canvas.onmouseup = () => {
+        isPainting = false;
+      };
+      canvas.onmousemove = e => {
+        if (isPainting) {
+          // ctx.fillRect(e.clientX - 5, e.clientY - 5, 10, 10);
+          ctx.beginPath();
+          ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.fill();
+        }
       };
     </script>
   </body>
