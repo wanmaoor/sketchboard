@@ -41,22 +41,58 @@
       canvas.width = document.documentElement.clientWidth; //文档的宽度
       canvas.height = document.documentElement.clientHeight;
       let ctx = canvas.getContext("2d");
+      ctx.lineWidth = 10;
+      ctx.lineCap = 'round'
       let isPainting = false;
-      canvas.onmousedown = () => {
-        isPainting = true;
-      };
-      canvas.onmouseup = () => {
-        isPainting = false;
-      };
-      canvas.onmousemove = e => {
-        if (isPainting) {
-          // ctx.fillRect(e.clientX - 5, e.clientY - 5, 10, 10);
-          ctx.beginPath();
-          ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
-          ctx.stroke();
-          ctx.fill();
+      let onMobileDevice = "ontouchstart" in document.documentElement;
+      let prev = {}
+      console.log("手机设备?", onMobileDevice);
+
+      if (onMobileDevice) {
+        canvas.ontouchstart = (e) => {
+          prev.x = e.clientX;
+          prev.y = e.clientY
         }
-      };
+
+        canvas.ontouchmove = e => {
+          ctx.beginPath();
+          // ctx.arc(
+          //   e.touches[0].clientX,
+          //   e.touches[0].clientY,
+          //   10,
+          //   0,
+          //   2 * Math.PI
+          // );
+          let x = e.touches[0].clientX;
+          let y = e.touches[0].clientY;
+          ctx.moveTo(prev.x, prev.y)
+          ctx.lineTo(x, y)
+          ctx.stroke();
+          prev.x = x
+          prev.y = y
+        };
+      } else {
+        canvas.onmousedown = (e) => {
+          isPainting = true;
+          prev.x = e.clientX;
+          prev.y = e.clientY
+        };
+        canvas.onmouseup = () => {
+          isPainting = false;
+        };
+        canvas.onmousemove = e => {
+          if (isPainting) {
+            // ctx.fillRect(e.clientX - 5, e.clientY - 5, 10, 10);
+            ctx.beginPath();
+            // ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
+            ctx.moveTo(prev.x, prev.y);
+            ctx.lineTo(e.clientX, e.clientY);
+            ctx.stroke();
+            prev.x = e.clientX
+            prev.y = e.clientY
+          }
+        };
+      }
     </script>
   </body>
 </html>
